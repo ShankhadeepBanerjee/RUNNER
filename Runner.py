@@ -2,11 +2,6 @@
 import pygame, sys, random, math ,time
 from pygame.locals import *
 
-
-
-
-        
-
 #Game Data++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Black = (0,0,0)
 White = (255,255,255)
@@ -132,19 +127,19 @@ def Button(x,y,w,h,Deep_color,Bright_color,text):
     pygame.draw.rect(SurfObj,Deep_color,(x-top_left_border,y-top_left_border,w+border,h+border))       #Button rect
 
     fontObj = pygame.font.Font("ariali.ttf",15)#
-    textObj = fontObj.render(text,True,Black)        #Button Text   
-    textRectObj = textObj.get_rect()                 #
-    textRectObj.topleft = (x,y)                      #   
-    SurfObj.blit(textObj,textRectObj)                #
+    textObj = fontObj.render(text,True,Black)                 #Button Text   
+    textRectObj = textObj.get_rect()                 
+    textRectObj.topleft = (x,y)                         
+    SurfObj.blit(textObj,textRectObj)                
 
-    mouse_pos = pygame.mouse.get_pos()                        #
+    mouse_pos = pygame.mouse.get_pos()                        
     if x < mouse_pos[0] < (x+w) and y < mouse_pos[1] < (y+h): #Button Hover
-        pygame.draw.rect(SurfObj,Bright_color,(x,y,w,h))      #
+        pygame.draw.rect(SurfObj,Bright_color,(x,y,w,h))      
         SurfObj.blit(textObj,textRectObj)
         
-        Right_clicked = (pygame.mouse.get_pressed()[0] == 1)#
-        if Right_clicked:                                   #Button Clicking
-            return (True)                                   #
+        Right_clicked = (pygame.mouse.get_pressed()[0] == 1)
+        if Right_clicked:                                     #Button Clicking
+            return (True)                                   
 
 #Crash Func. +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def Crash_screen(score,if_exit):
@@ -177,17 +172,15 @@ def Crash_screen(score,if_exit):
     SurfObj.blit(scoreSurf,scoreRect)
 
 
-    if if_exit == 12:
+    if if_exit == 12:       # 12 stands for event-type = exit
         pygame.quit()
         sys.exit()
 
 # Game State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 crashed = False
-sound_count = 0
 
 #Game loop +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 while True:
-    #SurfObj.fill(White)
     #Event Handler++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -203,21 +196,15 @@ while True:
     #Score ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if not crashed:
         MYFONT = pygame.font.Font("ariali.ttf",32)
-        scoreSurf = MYFONT.render("Score: %s" %(str(score)),True,White,Bright_Red)
+        scoreSurf = MYFONT.render("Score: %s" %(str(score)),True,White,Bright_Red)    #Score
         scoreRect = scoreSurf.get_rect()
         scoreRect.topleft = (0,0)
         SurfObj.blit(scoreSurf, scoreRect)
         
     # Crash Screen +++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if crashed:
-        Crash_screen(score,event.type)           #Crash Screen
-##        if sound_count == 0:
-##            soundObj = pygame.mixer.Sound("badswap.wav")
-##            soundObj.play()
-##            time.sleep(1)
-##            soundObj.stop()
-##            sound_count = 1
-##        
+        Crash_screen(score,event.type)                                                #Crash Screen
+	
     if crashed and previous_High_score < score:
         Myfont4 = pygame.font.Font("ariali.ttf",23)
         New_record_Surf = Myfont4.render("New   Record!",True,White,Bright_Green)     #New_Record
@@ -229,6 +216,7 @@ while True:
     if crashed:
         Play_again = Button(160,350,75,15,Green,Bright_Green,"Play Again")
         QUIT = Button(260,350,40,15,Green,Bright_Green,"QUIT")
+	
         if Play_again:
             crashed = False                                                            #Buttons(*Play again and *QUIT)
             Box_posx = 600
@@ -275,17 +263,3 @@ while True:
     fpsclock.tick(60)
     pygame.display.update()
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
