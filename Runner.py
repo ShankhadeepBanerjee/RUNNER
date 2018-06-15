@@ -2,6 +2,11 @@
 import pygame, sys, random, math ,time
 from pygame.locals import *
 
+
+
+
+        
+
 #Game Data++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Black = (0,0,0)
 White = (255,255,255)
@@ -126,10 +131,10 @@ def Button(x,y,w,h,Deep_color,Bright_color,text):
     #color = Deep_color
     pygame.draw.rect(SurfObj,Deep_color,(x-top_left_border,y-top_left_border,w+border,h+border))       #Button rect
 
-    fontObj = pygame.font.Font("ariali.ttf",15)#
+    fontObj = pygame.font.Font("ariali.ttf",15)
     textObj = fontObj.render(text,True,Black)                 #Button Text   
     textRectObj = textObj.get_rect()                 
-    textRectObj.topleft = (x,y)                         
+    textRectObj.topleft = (x,y)                      
     SurfObj.blit(textObj,textRectObj)                
 
     mouse_pos = pygame.mouse.get_pos()                        
@@ -162,7 +167,7 @@ def Crash_screen(score,if_exit):
     Myfont = pygame.font.Font("ariali.ttf",75)
     crashSurf = Myfont.render("CRASHED!!!",True,White,Bright_Red)
     crashRect = crashSurf.get_rect()
-    crashRect.topleft = (10,150)
+    crashRect.topleft = (30,150)
     SurfObj.blit(crashSurf, crashRect)
 
     Myfont2 = pygame.font.Font("ariali.ttf",27)
@@ -172,15 +177,33 @@ def Crash_screen(score,if_exit):
     SurfObj.blit(scoreSurf,scoreRect)
 
 
-    if if_exit == 12:       # 12 stands for event-type = exit
+    if if_exit == 12:
         pygame.quit()
         sys.exit()
-
+#Instuctions +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+def Instructions():
+    Myfont5 = pygame.font.Font("ariali.ttf",20)
+    High_score_Surf = Myfont5.render("UP = Jump",True,White,Blue)
+    High_score_Rect = High_score_Surf.get_rect()
+    High_score_Rect.topleft = (400,0)
+    SurfObj.blit(High_score_Surf,High_score_Rect)
+    
+	
+    Myfont6 = pygame.font.Font("ariali.ttf",20)
+    crashSurf = Myfont6.render("Space = Pause/Unpause",True,White,Bright_Red)
+    crashRect = crashSurf.get_rect()
+    crashRect.topleft = (278,20)
+    SurfObj.blit(crashSurf, crashRect)
+    
 # Game State +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 crashed = False
+paused = False
+sound_count = 0
 
 #Game loop +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#Start_screen()
 while True:
+    #SurfObj.fill(White)
     #Event Handler++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -188,23 +211,48 @@ while True:
             sys.exit()
         elif event.type == KEYDOWN and event.key == K_UP and jump_state != 3:
             jump_state = 2
+        elif event.type == KEYDOWN and event.key == K_SPACE and not paused:
+            paused = True
+        elif event.type == KEYDOWN and event.key == K_SPACE and paused:
+            paused = False
         elif cat_posy > 410:
             cat_posy = 410
 
     SurfObj.fill(White)
 
     #Score ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    if not crashed:
+    if not crashed:# and not paused:
         MYFONT = pygame.font.Font("ariali.ttf",32)
-        scoreSurf = MYFONT.render("Score: %s" %(str(score)),True,White,Bright_Red)    #Score
+        scoreSurf = MYFONT.render("Score: %s" %(str(score)),True,White,Bright_Red)
         scoreRect = scoreSurf.get_rect()
         scoreRect.topleft = (0,0)
         SurfObj.blit(scoreSurf, scoreRect)
+
+        Instructions()
+
+    # Pause Screen++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if paused:
+        #SurfObj.fill(White)
+        Myfont4 = pygame.font.Font("ariali.ttf",75)
+        pauseSurf = Myfont4.render("PAUSED",True,White,Bright_Red)
+        pauseRect = pauseSurf.get_rect()
+        pauseRect.topleft = (95,150)
+        SurfObj.blit(pauseSurf, pauseRect)
+        Unpause = Button(160,350,75,15,Green,Bright_Green,"Unpause")
+        QUIT = Button(260,350,40,15,Green,Bright_Green,"QUIT")
+        if Unpause:
+            paused = False                                                            #Buttons(*Play again and *QUIT)
+            
+
+        elif QUIT:
+            pygame.quit()
+            sys.exit()
+   
         
     # Crash Screen +++++++++++++++++++++++++++++++++++++++++++++++++++++++
     if crashed:
-        Crash_screen(score,event.type)                                                #Crash Screen
-	
+        Crash_screen(score,event.type)           #Crash Screen
+
     if crashed and previous_High_score < score:
         Myfont4 = pygame.font.Font("ariali.ttf",23)
         New_record_Surf = Myfont4.render("New   Record!",True,White,Bright_Green)     #New_Record
@@ -216,7 +264,6 @@ while True:
     if crashed:
         Play_again = Button(160,350,75,15,Green,Bright_Green,"Play Again")
         QUIT = Button(260,350,40,15,Green,Bright_Green,"QUIT")
-	
         if Play_again:
             crashed = False                                                            #Buttons(*Play again and *QUIT)
             Box_posx = 600
@@ -233,8 +280,8 @@ while True:
             
     #Cat_Jump ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     SurfObj.blit(Catgirl_img,(cat_posx,cat_posy))
-    
-    if not crashed:                                                                              #Checkes if game Crashed
+    if not crashed and not paused :                                                                             #Checkes if game Crashed
+                 
                  jump = cat_jump(cat_posx,cat_posy,Upper_limit,Lower_limit,speed,jump_state)     #Calling 'cat_jump' function as (jump) which returns (x,y,state)
                  jump_state = jump[2]                                                            #Changing cat's state 
                  cat_posy = jump[1]                                                              #Changing cat's hieght
@@ -244,22 +291,23 @@ while True:
     #Box Animation++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     pygame.draw.rect(SurfObj,Black,(Box_posx,Box_posy,Box_width,Box_hieght))
     pygame.draw.line(SurfObj,Black,(0,460),(500,460))
-    if Box_posx < -30:
-        Box_posx = 600
-        score += 1
-        Box_speed = (random.randint(8,16))
-    else:
-        if not crashed:
-            Box_posx -= Box_speed
-    # Overlap ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    Box_all = [Box_posx,Box_posy,Box_width,Box_hieght]
-    Cat_all = [cat_posx,cat_posy,cat_width,cat_hieght]
-    
-    if Overlap(Box_all,Cat_all):
-        crashed = True
+    if not crashed and not paused:
+
+        if Box_posx < -30:
+            Box_posx = 600
+            score += 1
+            Box_speed = (random.randint(8,16))
+        else:
+            if not crashed:
+                Box_posx -= Box_speed
+        # Overlap ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        Box_all = [Box_posx,Box_posy,Box_width,Box_hieght]
+        Cat_all = [cat_posx,cat_posy,cat_width,cat_hieght]
+        
+        if Overlap(Box_all,Cat_all):
+            crashed = True
         
 
         
     fpsclock.tick(60)
     pygame.display.update()
-    
